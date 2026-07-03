@@ -1,37 +1,45 @@
 import streamlit as st
+import segno  # A simple, easy library to generate QR codes instantly
 
-# =====================================================================
-# STREAMLIT FRONTEND CONFIGURATION & UI CELL Layout
-# =====================================================================
-st.set_page_config(page_title="Campus Lab Registry", page_icon="🎓", layout="centered")
+# 1. Page layout and styling setup
+st.set_page_config(page_title="QR Code Studio", page_icon="🔮", layout="centered")
 
-st.title("🎓 Campus Lab Registration Portal")
-st.write("Fill out the interactive form fields below to generate your official registry sheet.")
+st.title("🔮 Instant QR Code Generator Studio")
+st.write("Convert any plain text, phone number, or website URL link into a scannable QR Code!")
 
-# 1. Setting up our dynamic database dictionary to capture inputs from the web UI
-extracted_user_data = {}
-
-# 2. Building clean visual text boxes and drop-down selectors
-extracted_user_data["name"] = st.text_input("Enter your full name:", placeholder="e.g. Mohammed Rehan")
-
-# Capturing age cleanly as a sliding track wrapper
-extracted_user_data["age"] = st.slider("Select your current age:", min_value=16, max_value=30, value=18)
-
-# Blood group selector drop-down component tray
-extracted_user_data["blood"] = st.selectbox(
-    "Select your official blood group:",
-    ["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"]
+# 2. Capture user string inputs dynamically from the web page text box
+user_input_text = st.text_input(
+    "Paste your website link or text here:",
+    placeholder="e.g., https://github.com/rehanu04"
 )
 
-# 3. Form submission button gate check
-if st.button("🚀 Compile & Verify Registration Sheet"):
-    if extracted_user_data["name"].strip() == "":
-        st.error("🚨 Validation Failure: Please enter a valid name before submitting!")
-    else:
-        st.success("🎉 Profile Verified & Securely Registered!")
+# Advanced styling customization switches using our sidebar tools
+st.sidebar.header("🎨 Design Customization")
+qr_color = st.sidebar.color_picker("Pick QR Code Line Color:", "#000000")
+bg_color = st.sidebar.color_picker("Pick Background Canvas Color:", "#FFFFFF")
 
-        # Displaying the completed digital frontend form sheet inside a visual window frame box
-        st.markdown("### 📋 OFFICIAL CAMPUS RECORD SHEET")
-        st.info(f"**Name:** {extracted_user_data['name'].upper()}")
-        st.info(f"**Age Metrics:** {extracted_user_data['age']} Years Old")
-        st.info(f"**Blood Group Category:** {extracted_user_data['blood']}")
+# 3. Action Execution Button Gate
+if st.button("✨ Generate Scannable QR Code"):
+    if user_input_text.strip() == "":
+        st.warning("⚠️ Action Required: Please type or paste a valid text/link first!")
+    else:
+        st.success("🎉 QR Code Compiled Successfully!")
+        
+        # Live processing: Generate the QR code data using our imported library tool
+        compiled_qr = segno.make(user_input_text)
+        
+        # Save the generated matrix data directly into a temporary image file path string
+        temp_filename = "my_generated_qr.png"
+        compiled_qr.save(temp_filename, scale=10, dark=qr_color, light=bg_color)
+        
+        # Display the output image structure visually in the web dashboard screen area
+        st.image(temp_filename, caption="🎯 Scan this QR code now using your mobile phone camera!")
+        
+        # Provide a clean download button so students can save their generated image files
+        with open(temp_filename, "rb") as image_file:
+            st.download_button(
+                label="📥 Download QR Code Image",
+                data=image_file,
+                file_name="campus_qr_code.png",
+                mime="image/png"
+            )
